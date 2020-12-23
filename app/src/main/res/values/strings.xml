@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">13033</string>
+
+    <!--Hints-->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_full_name">Name</string>
+    <string name="prompt_address">Address</string>
+    <string name="prompt_sms">SMS</string>
+
+    <!--Buttons-->
+    <string name="action_login">LOGIN</string>
+    <string name="action_register">REGISTER</string>
+    <string name="action_send">SEND SMS</string>
+
+    <!--Validation-->
+    <string name="email_validation_error">A valid email is required!</string>
+    <string name="password_validation_error">Password is required!</string>
+    <string name="full_name_validation_error">Full name is required!</string>
+    <string name="address_validation_error">Address is required!</string>
+    <string name="transport_code_validation_error">A transport reason is required!</string>
+
+    <!--Messages-->
+    <string name="successful_user_creation">User created successfully!</string>
+    <string name="SMS">%1$s %2$s %3$s</string>
+</resources>
