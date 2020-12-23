@@ -22,5 +22,6 @@
 
     <!--Messages-->
     <string name="successful_user_creation">User created successfully!</string>
+    <string name="SMS_sent">SMS sent!</string>
     <string name="SMS">%1$s %2$s %3$s</string>
 </resources>

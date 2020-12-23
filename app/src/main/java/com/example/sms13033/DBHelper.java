@@ -12,11 +12,17 @@ import com.example.sms13033.models.TransportReason;
 
 import java.util.ArrayList;
 
+/**
+ * <p>
+ * A helper class to provide a high level interface for interacting with SQLite
+ * in order to create,retrieve,update or delete transport reasons.
+ * It uses the Singleton design pattern to keep only
+ * one instance of the DBHelper class.
+ * </p>
+ * <br/><b><u>Example:</u></b> DBHelper db = DBHelper.getInstance(getApplicationContext());
+ * @author  George Spyropoulos
+ * */
 public class DBHelper extends SQLiteOpenHelper {
-    /**A helper class to provide a high level interface for interacting with SQLite
-     * in order to retrieve,update or create transport reasons.
-     * It uses the Singleton design pattern to keep only
-     * one instance of the DBHelper class*/
 
     private static DBHelper instance;
 

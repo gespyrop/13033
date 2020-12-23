@@ -1,5 +1,11 @@
 package com.example.sms13033;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +18,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import com.example.sms13033.models.SMS;
 import com.example.sms13033.models.TransportReason;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     EditText fullNameEditText, addressEditText, smsEditText;
 
     private TransportReason transportReason;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         choices.setOrientation(LinearLayout.VERTICAL);
 
+        // Dynamically add radio button for transport reason choices
         for (final TransportReason tr : transportReasons) {
             RadioButton rb = new RadioButton(this);
             rb.setId(View.generateViewId());
@@ -64,11 +74,36 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        // Location updates
+        LocationManager locationManager = (LocationManager) this.
+                getSystemService(Context.LOCATION_SERVICE);
+
+        // Listen for location changes and update current latitude/longitude
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        };
+
+        // Location permission check
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.
+                    requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},234);
+            return;
+        }
+        // Request for location updates
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,
+                0, locationListener);
 
 
+        // Get the user's Firebase Realtime Database reference
         FirebaseUser user = mAuth.getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
+        // Fetch full name from Firebase if it is stored in the database
         userRef.child("full_name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -82,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Fetch address from Firebase if it is stored in the database
         userRef.child("address").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -95,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Update SMS text whenever the full name changes
         fullNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -114,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Update SMS text whenever the address changes
         addressEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -163,9 +201,11 @@ public class MainActivity extends AppCompatActivity {
         userRef.child("full_name").setValue(full_name);
         userRef.child("address").setValue(address);
 
+        SMS sms = new SMS(latitude, longitude, transportReason);
 
+        userRef.child("messages").push().setValue(sms);
 
-        Toast.makeText(this, smsEditText.getText().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.SMS_sent), Toast.LENGTH_SHORT).show();
     }
 
     public void logout(View view) {
