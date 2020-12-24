@@ -4,8 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,9 +36,16 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TransportReason tr = transportReasons.get(position);
-        holder.codeButton.setText(String.valueOf(tr.getCode()));
+        final TransportReason tr = transportReasons.get(position);
+        holder.codeText.setText(String.valueOf(tr.getCode()));
         holder.descriptionText.setText(tr.getDescription());
+
+        holder.edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, String.valueOf(tr.getCode()), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -46,13 +54,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        RadioButton codeButton;
-        TextView descriptionText;
+        TextView codeText, descriptionText;
+        ImageButton edit_button;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            codeButton = itemView.findViewById(R.id.code);
+            codeText = itemView.findViewById(R.id.code);
             descriptionText = itemView.findViewById(R.id.description);
+            edit_button = itemView.findViewById(R.id.edit_button);
         }
     }
 }

@@ -2,11 +2,13 @@ package com.example.sms13033;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -61,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         for (final TransportReason tr : transportReasons) {
             RadioButton rb = new RadioButton(this);
             rb.setId(View.generateViewId());
-            rb.setText(String.valueOf(tr.getCode()) + "  " + tr.getDescription());
+            rb.setText(getString(R.string.transport_code_description,
+                    String.valueOf(tr.getCode()),
+                    tr.getDescription()));
             rb.setPadding(8, 24, 120, 24);
             rb.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -178,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
         // The user can only logout by pressing the "logout" button
     }
 
-    // TODO Send SMS and save message to Firebase
     public void send(View view) {
         String full_name = fullNameEditText.getText().toString();
         String address = addressEditText.getText().toString();
@@ -201,9 +204,21 @@ public class MainActivity extends AppCompatActivity {
         userRef.child("full_name").setValue(full_name);
         userRef.child("address").setValue(address);
 
+        // SMS Permission check
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!=
+                PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},5434);
+            return;
+        }
+
+        SmsManager manager = SmsManager.getDefault();
+        manager.sendTextMessage("13033",null,smsEditText.getText().toString(),null,null);
+
         SMS sms = new SMS(latitude, longitude, transportReason);
 
         userRef.child("messages").push().setValue(sms);
+
+        clearChoice();
 
         Toast.makeText(this, getString(R.string.SMS_sent), Toast.LENGTH_SHORT).show();
     }
@@ -213,8 +228,17 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    // TODO Open SettingsActivity
-    public void settings(View view) {
-        Toast.makeText(this, "Settings pressed", Toast.LENGTH_SHORT).show();
+    public void edit(View view) {
+        startActivity(new Intent(getApplicationContext(), EditActivity.class));
+    }
+
+    private void clearChoice() {
+        choices.clearCheck();
+        transportReason = null;
+        smsEditText.setText(getString(R.string.SMS,
+                "",
+                fullNameEditText.getText().toString(),
+                addressEditText.getText().toString())
+        );
     }
 }
