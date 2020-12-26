@@ -66,6 +66,10 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.insert("TransportReasons", null, contentValues) != -1;
     }
 
+    /**
+     * Get all transport reasons.
+     * @return All stored TransportReason objects
+     * */
     public ArrayList<TransportReason> getTransportReasons() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM TransportReasons", null);
@@ -87,5 +91,38 @@ public class DBHelper extends SQLiteOpenHelper {
         c.close();
 
         return transportReasons;
+    }
+
+    /**
+     * Add a transport reason.
+     * @param tr TransportReason object to be stored in the database
+     * */
+    public void addTransportReason(TransportReason tr) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("code", tr.getCode());
+        contentValues.put("description", tr.getDescription());
+
+        db.insert("TransportReasons", null, contentValues);
+    }
+
+    public void updateTransportReason(TransportReason tr) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("code", tr.getCode());
+        contentValues.put("description", tr.getDescription());
+
+        db.update("TransportReasons", contentValues, "id=?", new String[]{String.valueOf(tr.getId())});
+    }
+
+    /**
+     * Delete a transport reason.
+     * @param id The id of a TransportReason
+     * */
+    public void deleteTransportReason(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("TransportReasons" ,"id=?", new String[]{String.valueOf(id)});
     }
 }

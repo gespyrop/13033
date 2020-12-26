@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">13033</string>
+
+    <!--Hints-->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Κωδικός πρόσβασης</string>
+    <string name="prompt_full_name">Όνομα</string>
+    <string name="prompt_address">Διεύθυνση</string>
+    <string name="prompt_sms">SMS</string>
+    <string name="prompt_code">Κωδικός</string>
+    <string name="prompt_description">Περιγραφή</string>
+    <string name="prompt_delete">Θέλετε σίγουρα να διαγράψετε αυτήν την αιτία μετακίνησης;</string>
+    <string name="prompt_add">Προσθήκη νέας αιτίας μετακίνησης</string>
+    <string name="prompt_edit">Επεξεργασία αιτίας μετακίνησης</string>
+
+    <!--Dialogs-->
+    <string name="add">Προσθήκη</string>
+    <string name="edit">Επεξεργασία</string>
+    <string name="delete">Διαγραφή</string>
+
+    <!--Buttons-->
+    <string name="action_login">ΕΙΣΟΔΟΣ</string>
+    <string name="action_register">ΕΓΓΡΑΦΗ</string>
+    <string name="action_send">ΑΠΟΣΤΟΛΗ SMS</string>
+    <string name="cancel">Ακύρωση</string>
+    <string name="ok">OK</string>
+
+    <!--Validation-->
+    <string name="email_validation_error">Απαιτείται έγκυρο email!</string>
+    <string name="password_validation_error">Απαιτείται κωδικός πρόσβασης!</string>
+    <string name="full_name_validation_error">Απαιτείται πλήρες όνομα!</string>
+    <string name="address_validation_error">Απαιτείται διεύθυνση!</string>
+    <string name="transport_code_validation_error">Απαιτείται αιτία μετακίνησης!</string>
+
+    <!--Messages-->
+    <string name="successful_user_creation">Ο χρήστης δημιουργήθηκε με επιτυχία!</string>
+    <string name="SMS_sent">SMS απεστάλη!</string>
+    <string name="SMS">%1$s %2$s %3$s</string>
+    <string name="transport_code_description">%1$S\t%2$s</string>
+</resources>

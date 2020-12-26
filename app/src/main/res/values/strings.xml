@@ -7,11 +7,23 @@
     <string name="prompt_full_name">Name</string>
     <string name="prompt_address">Address</string>
     <string name="prompt_sms">SMS</string>
+    <string name="prompt_code">Code</string>
+    <string name="prompt_description">Description</string>
+    <string name="prompt_delete">Are you sure you want to delete this transport reason?</string>
+    <string name="prompt_add">Add a new transport reason</string>
+    <string name="prompt_edit">Edit transport reason</string>
+
+    <!--Dialogs-->
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
     <!--Buttons-->
     <string name="action_login">LOGIN</string>
     <string name="action_register">REGISTER</string>
     <string name="action_send">SEND SMS</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
     <!--Validation-->
     <string name="email_validation_error">A valid email is required!</string>

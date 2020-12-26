@@ -8,11 +8,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -33,8 +37,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int VOICE_REC_RESULT=22342;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
 
@@ -53,30 +59,9 @@ public class MainActivity extends AppCompatActivity {
         addressEditText = findViewById(R.id.address);
         smsEditText = findViewById(R.id.sms);
         choices = findViewById(R.id.choices);
-
-        DBHelper db = DBHelper.getInstance(getApplicationContext());
-        ArrayList<TransportReason> transportReasons = db.getTransportReasons();
-
         choices.setOrientation(LinearLayout.VERTICAL);
 
-        // Dynamically add radio button for transport reason choices
-        for (final TransportReason tr : transportReasons) {
-            RadioButton rb = new RadioButton(this);
-            rb.setId(View.generateViewId());
-            rb.setText(getString(R.string.transport_code_description,
-                    String.valueOf(tr.getCode()),
-                    tr.getDescription()));
-            rb.setPadding(8, 24, 120, 24);
-            rb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    transportReason = tr;
-                    smsEditText.setText(getString(R.string.SMS, String.valueOf(transportReason.getCode()), fullNameEditText.getText().toString(), addressEditText.getText().toString()));
-                }
-            });
-            choices.addView(rb);
-
-        }
+        loadChoices();
 
         // Location updates
         LocationManager locationManager = (LocationManager) this.
@@ -182,6 +167,12 @@ public class MainActivity extends AppCompatActivity {
         // The user can only logout by pressing the "logout" button
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadChoices();
+    }
+
     public void send(View view) {
         String full_name = fullNameEditText.getText().toString();
         String address = addressEditText.getText().toString();
@@ -212,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         SmsManager manager = SmsManager.getDefault();
-        manager.sendTextMessage("13033",null,smsEditText.getText().toString(),null,null);
+        manager.sendTextMessage("+3013033",null,smsEditText.getText().toString(),null,null);
 
         SMS sms = new SMS(latitude, longitude, transportReason);
 
@@ -230,6 +221,90 @@ public class MainActivity extends AppCompatActivity {
 
     public void edit(View view) {
         startActivity(new Intent(getApplicationContext(), EditActivity.class));
+    }
+
+    public void voice_command(View view) {
+        Intent intent= new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Please say something!");
+        startActivityForResult(intent,VOICE_REC_RESULT);
+    }
+
+    public void onActivityResult(int Requestcode, int Resultcode, Intent data) {
+        if (Requestcode==VOICE_REC_RESULT && Resultcode==RESULT_OK){
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+            // Make sure "matches" is not null
+            if (matches == null) return;
+
+            // Press the edit button
+            if (matches.contains("edit") || matches.contains("επεξεργασία"))
+                edit(null);
+
+            // Press the send button
+            if (matches.contains("send") || matches.contains("αποστολή"))
+                send(null);
+
+            // Press the logout button
+            if (matches.contains("logout") || matches.contains("αποσύνδεση"))
+                logout(null);
+
+            ArrayList<String> command = new ArrayList<String>(Arrays.asList(matches.get(0).split(" ")));
+
+            // Set the name
+            if ((command.get(0).equals("name") || command.get(0).equals("όνομα")) && command.size() > 1) {
+                command.remove(0);
+
+                // Join the remaining strings
+                StringBuilder sb = new StringBuilder();
+                for (String s : command)
+                    sb.append(s).append(" ");
+
+                fullNameEditText.setText(sb.toString().toUpperCase());
+            }
+
+            // Set the address
+            if ((command.get(0).equals("address") || command.get(0).equals("διεύθυνση")) && command.size() > 1) {
+                command.remove(0);
+
+                // Join the remaining strings
+                StringBuilder sb = new StringBuilder();
+                for (String s : command)
+                    sb.append(s).append(" ");
+
+                addressEditText.setText(sb.toString().toUpperCase());
+            }
+        }
+
+        super.onActivityResult(Requestcode, Resultcode, data);
+    }
+
+    private void loadChoices() {
+        clearChoice();
+        DBHelper db = DBHelper.getInstance(getApplicationContext());
+        ArrayList<TransportReason> transportReasons = db.getTransportReasons();
+
+        choices.removeAllViews();
+
+        // Dynamically add radio button for transport reason choices
+        for (final TransportReason tr : transportReasons) {
+            RadioButton rb = new RadioButton(this);
+            rb.setId(View.generateViewId());
+            rb.setText(getString(R.string.transport_code_description,
+                    String.valueOf(tr.getCode()),
+                    tr.getDescription()));
+            rb.setPadding(8, 24, 120, 24);
+            rb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    transportReason = tr;
+                    smsEditText.setText(getString(R.string.SMS, String.valueOf(transportReason.getCode()), fullNameEditText.getText().toString(), addressEditText.getText().toString()));
+                }
+            });
+            choices.addView(rb);
+
+        }
     }
 
     private void clearChoice() {
