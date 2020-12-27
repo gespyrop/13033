@@ -1,27 +1,32 @@
 package com.example.sms13033;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * <b>LoginActivity</b> is the launcher activity of the app.
+ * Here the user can either login to his account
+ * or register a new account.
+ * If the user is already logged in
+ * the MainActivity automatically opens.
+ *
+ * @author George Spyropoulos
+ * */
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    FirebaseUser user;
     EditText emailEditText, passwordEditText;
-    String email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,10 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
+
+        // Go to the MainActivity if the user has already logged in
+        if (mAuth.getCurrentUser() != null)
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
     }
 
     public void login(View view) {
@@ -49,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                // Log the user in
                 if (task.isSuccessful()) {
                     emailEditText.setText("");
                     passwordEditText.setText("");
@@ -79,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                // Register a new user
                 if (task.isSuccessful()) {
-                    user = mAuth.getCurrentUser();
                     Toast.makeText(getApplicationContext(), getString(R.string.successful_user_creation), Toast.LENGTH_SHORT).show();
                     emailEditText.setText("");
                     passwordEditText.setText("");
