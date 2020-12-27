@@ -6,6 +6,8 @@ import java.sql.Timestamp;
  * Model for an SMS sent to 13033.
  * Stores the location, timestamp
  * and transport reason of the SMS message.
+ *
+ * @author George Spyropoulos
  * */
 public class SMS {
     private double latitude, longitude;

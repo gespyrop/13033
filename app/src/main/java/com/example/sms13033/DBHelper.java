@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.Nullable;
-
 import com.example.sms13033.models.TransportReason;
 
 import java.util.ArrayList;
@@ -31,12 +29,12 @@ public class DBHelper extends SQLiteOpenHelper {
             instance = new DBHelper(context.getApplicationContext());
 
         if (instance.getTransportReasons().isEmpty()) {
-            instance.saveTransportReason(new TransportReason(1, "Μετάβαση σε φαρμακείο ή γιατρό"));
-            instance.saveTransportReason(new TransportReason(2, "Προμήθειες αγαθών πρώτης ανάγκης"));
-            instance.saveTransportReason(new TransportReason(3, "Μετάβαση στην τράπεζα"));
-            instance.saveTransportReason(new TransportReason(4, "Παροχή βοήθειας σε ανθρώπους που βρίσκονται σε ανάγκη"));
-            instance.saveTransportReason(new TransportReason(5, "Μετάβαση σε τελετή ή εν διαστάσει γονέων σε τέκνα"));
-            instance.saveTransportReason(new TransportReason(6, "Σωματική άσκηση σε εξωτερικό χώρο ή κίνηση με κατοικίδιο ζώο"));
+            instance.addTransportReason(new TransportReason(1, "Μετάβαση σε φαρμακείο ή γιατρό"));
+            instance.addTransportReason(new TransportReason(2, "Προμήθειες αγαθών πρώτης ανάγκης"));
+            instance.addTransportReason(new TransportReason(3, "Μετάβαση στην τράπεζα"));
+            instance.addTransportReason(new TransportReason(4, "Παροχή βοήθειας σε ανθρώπους που βρίσκονται σε ανάγκη"));
+            instance.addTransportReason(new TransportReason(5, "Μετάβαση σε τελετή ή εν διαστάσει γονέων σε τέκνα"));
+            instance.addTransportReason(new TransportReason(6, "Σωματική άσκηση σε εξωτερικό χώρο ή κίνηση με κατοικίδιο ζώο"));
         }
 
         return instance;
@@ -56,19 +54,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS TransportReasons;");
     }
 
-    public boolean saveTransportReason(TransportReason tr) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("code", tr.getCode());
-        contentValues.put("description", tr.getDescription());
-
-        return db.insert("TransportReasons", null, contentValues) != -1;
-    }
-
     /**
      * Get all transport reasons.
-     * @return All stored TransportReason objects
+     * @return ArrayList with all the stored TransportReason objects
      * */
     public ArrayList<TransportReason> getTransportReasons() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -94,7 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Add a transport reason.
+     * Add a new transport reason.
      * @param tr TransportReason object to be stored in the database
      * */
     public void addTransportReason(TransportReason tr) {
@@ -107,6 +95,10 @@ public class DBHelper extends SQLiteOpenHelper {
         db.insert("TransportReasons", null, contentValues);
     }
 
+    /**
+     * Update an existing transport reason.
+     * @param tr TransportReason object to be updated
+     * */
     public void updateTransportReason(TransportReason tr) {
         SQLiteDatabase db = this.getWritableDatabase();
 

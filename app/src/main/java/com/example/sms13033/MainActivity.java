@@ -12,11 +12,8 @@ import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,6 +36,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * <b>MainActivity</b> is the main activity of the app.
+ * The user can insert their information and select a
+ * transport reason. They can then send the SMS to 13033
+ * with the press of a button. Voice commands
+ * are also supported.
+ *
+ * @author George Spyropoulos
+ * */
 public class MainActivity extends AppCompatActivity {
     public static final int VOICE_REC_RESULT=22342;
     private FirebaseAuth mAuth;
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         choices = findViewById(R.id.choices);
         choices.setOrientation(LinearLayout.VERTICAL);
 
+        // Load the choices from SQLite
         loadChoices();
 
         // Location updates
@@ -86,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         // Request for location updates
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,
                 0, locationListener);
-
 
         // Get the user's Firebase Realtime Database reference
         FirebaseUser user = mAuth.getCurrentUser();
@@ -170,9 +176,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        /*
+        Reload choices from SQLite in onResume.
+        This is to ensure that the choices are
+        up to date after being edited in EditActivity.
+        */
         loadChoices();
     }
 
+    // Send button
     public void send(View view) {
         String full_name = fullNameEditText.getText().toString();
         String address = addressEditText.getText().toString();
@@ -214,24 +226,28 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, getString(R.string.SMS_sent), Toast.LENGTH_SHORT).show();
     }
 
+    // Logout button
     public void logout(View view) {
         mAuth.signOut();
         this.finish();
     }
 
+    // Edit button
     public void edit(View view) {
         startActivity(new Intent(getApplicationContext(), EditActivity.class));
     }
 
+    // Voice command button
     public void voice_command(View view) {
-        Intent intent= new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Please say something!");
-        startActivityForResult(intent,VOICE_REC_RESULT);
+        startActivityForResult(intent,VOICE_REC_RESULT); // Open speech recognition activity
     }
 
     public void onActivityResult(int Requestcode, int Resultcode, Intent data) {
+        // Handle the result from the speech recognition activity
         if (Requestcode==VOICE_REC_RESULT && Resultcode==RESULT_OK){
             ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
@@ -250,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             if (matches.contains("logout") || matches.contains("αποσύνδεση"))
                 logout(null);
 
-            ArrayList<String> command = new ArrayList<String>(Arrays.asList(matches.get(0).split(" ")));
+            ArrayList<String> command = new ArrayList<>(Arrays.asList(matches.get(0).split(" ")));
 
             // Set the name
             if ((command.get(0).equals("name") || command.get(0).equals("όνομα")) && command.size() > 1) {
@@ -280,6 +296,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(Requestcode, Resultcode, data);
     }
 
+    /**
+     * Reload the TransportReason objects from SQLite
+     * and dynamically create the radio buttons
+     * */
     private void loadChoices() {
         clearChoice();
         DBHelper db = DBHelper.getInstance(getApplicationContext());
@@ -307,6 +327,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Clear the radio button choice
+     * */
     private void clearChoice() {
         choices.clearCheck();
         transportReason = null;

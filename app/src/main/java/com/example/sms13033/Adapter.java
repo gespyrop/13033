@@ -17,6 +17,15 @@ import com.example.sms13033.models.TransportReason;
 
 import java.util.ArrayList;
 
+/**
+ * <b>Adapter</b> is a custom adapter for EditView's RecyclerView.
+ * <p>The data source of the adapter is a list with all the
+ * TransportReason objects.</p>
+ * <p>Each item is displayed as a card with
+ * both edit and delete capabilities.</p>
+ *
+ * @author George Spyropoulos
+ * */
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     Context context;
@@ -41,7 +50,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        // Get the TransportReason objects
         final TransportReason tr = transportReasons.get(position);
+
+        // Pass the values of the TransportReason object to the codeText
+        // and descriptionText fields in the transport_reason_card layout
         holder.codeText.setText(String.valueOf(tr.getCode()));
         holder.descriptionText.setText(tr.getDescription());
 
@@ -53,6 +66,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                 final EditText dialog_code = dialog_view.findViewById(R.id.dialog_code);
                 final EditText dialog_description = dialog_view.findViewById(R.id.dialog_description);
 
+                // Open a dialog to edit an existing transport reason
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setCancelable(true)
                         .setTitle(context.getString(R.string.edit))
@@ -74,15 +88,17 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                                     int code = Integer.parseInt(code_text);
                                     tr.setCode(code);
                                     tr.setDescription(description);
-                                    db.updateTransportReason(tr);
-                                    notifyItemChanged(position);
+                                    db.updateTransportReason(tr); // Save the updated TransportReason object to SQLite
+                                    notifyItemChanged(position); // Notify the adapter to refresh the RecyclerView
 
                                 }
                             }
                         });
 
+                // Display the current values
                 dialog_code.setText(String.valueOf(tr.getCode()));
                 dialog_description.setText(tr.getDescription());
+
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
@@ -106,8 +122,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 db.deleteTransportReason(tr.getId());
-                                transportReasons.remove(position);
-                                notifyItemRemoved(position);
+                                transportReasons.remove(position); // Delete the TransportReason object from SQLite
+                                notifyItemRemoved(position); // Notify the adapter to refresh the RecyclerView
                             }
                         });
 
@@ -122,10 +138,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return transportReasons.size();
     }
 
+    /**
+     * Inner class of the adapter for the ViewHolder of
+     * every TransportReason object in transportReasons.
+     * */
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView codeText, descriptionText;
         ImageButton edit_button, delete_button;
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

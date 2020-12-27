@@ -1,5 +1,10 @@
 package com.example.sms13033.models;
 
+/**
+ * Model for a TransportReason.
+ *
+ * @author George Spyropoulos
+ * */
 public class TransportReason {
     private int code, id;
     private String description;
