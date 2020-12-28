@@ -96,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the user's Firebase Realtime Database reference
         FirebaseUser user = mAuth.getCurrentUser();
+
+        // Check if the user is null
+        if (user == null)
+            finish();
+
         userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
         // Fetch full name from Firebase if it is stored in the database
@@ -215,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         SmsManager manager = SmsManager.getDefault();
-        manager.sendTextMessage("+3013033",null,smsEditText.getText().toString(),null,null);
+        manager.sendTextMessage("13033",null,smsEditText.getText().toString(),null,null);
 
         SMS sms = new SMS(latitude, longitude, transportReason);
 
