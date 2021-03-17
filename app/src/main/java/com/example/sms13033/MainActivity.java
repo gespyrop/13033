@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         fullNameEditText.setText(full_name);
 
         // Load address
-        String address = sp.getString("full_name", "");
+        String address = sp.getString("address", "");
         addressEditText.setText(address);
 
         // Update SMS text whenever the full name changes
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("full_name", full_name);
         editor.putString("address", address);
+        editor.commit();
 
         // SMS Permission check
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!=
