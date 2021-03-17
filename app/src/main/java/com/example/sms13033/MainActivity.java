@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("full_name", full_name);
         editor.putString("address", address);
-        editor.commit();
+        editor.apply();
 
         // SMS Permission check
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!=
